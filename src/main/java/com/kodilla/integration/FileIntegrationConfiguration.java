@@ -3,8 +3,9 @@ package com.kodilla.integration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlowBuilder;
+import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.file.FileReadingMessageSource;
+import org.springframework.integration.file.FileWritingMessageHandler;
 
 import java.io.File;
 
@@ -12,9 +13,14 @@ import java.io.File;
 public class FileIntegrationConfiguration {
 
     @Bean
-    IntegrationFlowBuilder fileIntegrationFlow(FileReadingMessageSource fileAdapter, FileTransformer transformer) {
+    StandardIntegrationFlow fileIntegrationFlow(
+            FileReadingMessageSource fileAdapter,
+            FileTransformer transformer,
+            FileWritingMessageHandler outputFileHandler) {
         return IntegrationFlow.from(fileAdapter)
-                .transform(transformer, "transformFile");
+                .transform(transformer, "transformFile")
+                .handle(outputFileHandler)
+                .get();
     }
 
     @Bean
@@ -28,6 +34,15 @@ public class FileIntegrationConfiguration {
     @Bean
     FileTransformer transformer() {
         return new FileTransformer();
+    }
+
+    @Bean
+    FileWritingMessageHandler outputFileAdapter() {
+        File directory = new File("data/output");
+        FileWritingMessageHandler handler = new FileWritingMessageHandler(directory);
+        handler.setExpectReply(false);
+
+        return handler;
     }
 
 }
