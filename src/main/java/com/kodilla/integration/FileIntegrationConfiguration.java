@@ -18,6 +18,7 @@ public class FileIntegrationConfiguration {
             FileReadingMessageSource fileAdapter,
             FileTransformer transformer,
             FileWritingMessageHandler outputFileHandler) {
+        //indicate how to initiate
         return IntegrationFlow.from(fileAdapter, config -> config.poller(Pollers.fixedDelay(1000)))
                 .transform(transformer, "transformFile")
                 .handle(outputFileHandler)
