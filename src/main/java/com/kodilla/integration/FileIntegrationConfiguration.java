@@ -12,16 +12,22 @@ import java.io.File;
 public class FileIntegrationConfiguration {
 
     @Bean
-    IntegrationFlowBuilder fileIntegrationFlow(FileReadingMessageSource fileAdapter) {
+    IntegrationFlowBuilder fileIntegrationFlow(FileReadingMessageSource fileAdapter, FileTransformer transformer) {
         return IntegrationFlow.from(fileAdapter)
-                .tr
+                .transform(transformer, "transformFile");
     }
+
     @Bean
     FileReadingMessageSource fileAdapter() {
         FileReadingMessageSource fileSource = new FileReadingMessageSource();
         fileSource.setDirectory(new File("data/input"));
 
         return fileSource;
+    }
+
+    @Bean
+    FileTransformer transformer() {
+        return new FileTransformer();
     }
 
 }
