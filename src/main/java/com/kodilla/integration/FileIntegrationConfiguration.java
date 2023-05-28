@@ -3,6 +3,7 @@ package com.kodilla.integration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.file.FileReadingMessageSource;
 import org.springframework.integration.file.FileWritingMessageHandler;
@@ -17,7 +18,7 @@ public class FileIntegrationConfiguration {
             FileReadingMessageSource fileAdapter,
             FileTransformer transformer,
             FileWritingMessageHandler outputFileHandler) {
-        return IntegrationFlow.from(fileAdapter)
+        return IntegrationFlow.from(fileAdapter, config -> config.poller(Pollers.fixedDelay(1000)))
                 .transform(transformer, "transformFile")
                 .handle(outputFileHandler)
                 .get();
