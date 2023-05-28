@@ -1,1 +1,1 @@
-# spring-integration
+# spring-integration-exercise
