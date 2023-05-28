@@ -4,12 +4,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class IntegrationController {
@@ -25,6 +28,23 @@ public class IntegrationController {
         try {
             Files.writeString(file, fileContent, StandardCharsets.UTF_8);
             return "Writing";
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @GetMapping("/check")
+    public String check() {
+
+        Path path = Paths.get("data/output/result.csv");
+
+
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
+            Stream<String> lines = reader.lines();
+            String content = lines.collect(Collectors.joining("\n"));
+            lines.close();
+            return content;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
